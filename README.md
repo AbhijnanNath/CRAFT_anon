@@ -1,4 +1,4 @@
-# CRAFT: Collaborative Reasoning Agents For Construction Tasks
+# Code and data for the submission, "CRAFT: Grounded Multi-Agent Coordination Under Partial Information" 
 
 > **CRAFT** is a multi-agent benchmark for evaluating pragmatic communication 
 > in large language models under strict partial information. Three director 
@@ -36,7 +36,7 @@ CRAFT/
 ├── train_dpo.py                      # DPO training for director models (TRL + LoRA) (optional, not used in paper)
 ├── test_game_state_tracking.py       # Unit tests — physics engine correctness
 ├── test_oracle.py                    # Oracle validation suite — move stats and coverage
-├── run_sample.sh                     # Sample experiment script (see Quick Start)
+├── run_craft_all.sh                    # Full experimental run for the paper for generating game logs
 ├── data/
 │   └── structures_dataset_20.json    # 20 evaluation structures (7 simple,
 │                                     # 8 medium, 5 complex; 21-25 blocks)
@@ -89,6 +89,63 @@ python run_craft.py --mode local --director qwen-7b --oracle --oracle_n 5 --no_t
 ```bash
 python run_craft.py --mode api --director gpt-4o-mini --structures 0,1,5 --oracle --oracle_n 5 --no_tools --turns 20
 ```
+
+## Judge Evaluation
+
+After generating game logs with `run_craft_all.sh` or `run_craft.py`, run the three judges to evaluate director communication quality.
+
+### Step 1 — Configure Paths
+
+In `sg_mm_judge_calls.py`, set the paths to your game logs:
+
+```python
+ORACLE_DIR_FRONTIER = "craft_results/api"    # frontier model game logs
+ORACLE_DIR_BASE     = "craft_results/local"  # open-weight model game logs
+BASE_DIR            = Path("judge_results_sg_mm")  # output directory
+```
+
+Game logs are expected in the format:
+```
+craft_results/api/{model_name}_gpt-4o-mini/craft_{structure_id}_{run}.json
+craft_results/local/{model_name}_gpt-4o-mini/craft_{structure_id}_{run}.json
+```
+
+### Step 2 — Run SG and MM Judges
+
+Evaluates each director's spatial grounding (SG) and mind modeling (MM) quality turn-by-turn:
+
+```bash
+python sg_mm_judge_calls.py
+```
+
+Results saved to `judge_results_sg_mm/run_{1,2,3}/master.pkl`.
+
+### Step 3 — Run PS Judge
+
+Evaluates whether collective director output was pragmatically sufficient to guide the builder toward an oracle-correct move:
+
+```bash
+python judge_pragmatics.py
+```
+
+Results saved to `judge_results_ps/run_{1,2,3}/ps_results.pkl`.
+
+### Judge Output Format
+
+Each `master.pkl` contains a dict keyed by model name, with per-turn per-director SG and MM scores:
+
+```python
+{
+  "gpt-4o": {
+    "sg": [{"model": ..., "structure_id": ..., "turn": ..., "director": ...,
+             "scores": {"SG1": {"answer": "Yes", "reason": "..."}, ...},
+             "sg_score": 0.857}, ...],
+    "mm": [{"mm_score": 0.625, ...}, ...]
+  }, ...
+}
+```
+
+Each `ps_results.pkl` contains per-turn PS scores with condition labels (C1\_followed / C2\_not\_followed) and per-question answers (PS1–PS6).
 
 **All CLI options:**
 ```
