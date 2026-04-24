@@ -4,7 +4,7 @@
 > in large language models under strict partial information. Three director 
 > agents with complementary but incomplete views of a 3D target structure must 
 > coordinate through natural language to guide a builder agent toward the correct 
-> configuration — a task no single agent can solve alone.
+> configuration.
 
 ## Supported Models
 
