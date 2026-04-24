@@ -11,8 +11,7 @@
 **Frontier (API):** GPT-4o, GPT-4o-Mini, GPT-4.1-Mini, Claude-Sonnet-4.6, 
 Gemini-2.5-Flash, Gemini-3-Flash, Gemini-3.1-Flash-Lite
 
-**Open-weight (local):** Qwen-2.5 7B/14B/32B/72B, Llama-3-8B, Mistral-7B, 
-Gemma-2-9B, DeepSeek-V2-Lite
+**Open-weight (local):** Qwen-2.5-Instruct 7B/14B/32B/72B, Llama-3.1-8B-Instruct, Mistral-7B-Instruct-v0.3, Gemma-2-9B-Instruct, DeepSeek-V2-Lite
 
 
 ## Repository Structure
