@@ -43,8 +43,7 @@ CRAFT/
 ```
 ## Installation
 ```bash
-git clone https://github.com/csu-signal/CRAFT
-cd CRAFT
+ 
 pip install -r requirements.txt
 ```
 
